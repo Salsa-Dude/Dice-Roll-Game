@@ -15,7 +15,8 @@ var scores,
     roundScore,
     player1CurrentScore,
     player2CurrentScore,
-    diceDom;
+    diceDom,
+    isPlaying;
 
     init();
 
@@ -26,6 +27,7 @@ function init() {
   player1CurrentScore = document.getElementById('current-0');
   player2CurrentScore = document.getElementById('current-1');
   diceDom = document.querySelector('.dice');
+  isPlaying = true;
   
   document.querySelector('.dice').style.display = 'none';
   document.getElementById('score-0').textContent = 0;
@@ -63,43 +65,49 @@ function switchPlayer() {
 }
 
 document.querySelector('.btn-roll').addEventListener('click', function() {
-  
-  // Roll dice
-  var rollDice = Math.floor(Math.random() * 6) + 1;
-  
-  // Display dice
-  diceDom.style.display = 'block';
-  diceDom.src = `img/dice-${rollDice}.png`;
 
-  // Update the roundScore if the roll dice is NOT a 1
-  if (rollDice !== 1) {
-    // Add score
-    roundScore += rollDice;
-    // Add roundScore to current player
-    document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
-  } else {
-    // switch player
-   switchPlayer();
+  if(isPlaying) {
+    // Roll dice
+    var rollDice = Math.floor(Math.random() * 6) + 1;
+  
+    // Display dice
+    diceDom.style.display = 'block';
+    diceDom.src = `img/dice-${rollDice}.png`;
+
+    // Update the roundScore if the roll dice is NOT a 1
+    if (rollDice !== 1) {
+      // Add score
+      roundScore += rollDice;
+      // Add roundScore to current player
+      document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
+    } else {
+      // switch player
+      switchPlayer();
+    }
   }
 });
 
 document.querySelector('.btn-hold').addEventListener('click', function() {
-  // Add curent score to global score
-  scores[activePlayer] += roundScore;
 
-  // Update the UI
-  document.getElementById(`score-${activePlayer}`).textContent = scores[activePlayer];
+  if(isPlaying) {
+    // Add curent score to global score
+    scores[activePlayer] += roundScore;
 
-  // Check if player won the game
-  if(scores[activePlayer] >= 20) {
-    document.getElementById(`name-${activePlayer}`).textContent = 'Winner!';
-    diceDom.style.display = 'none';
-    document.querySelector(`.player-${activePlayer}-panel`).classList.add('winner');
-    document.querySelector(`.player-${activePlayer}-panel`).classList.remove('active');
-    
-  } else {
-    // If no winner, switch player
-    switchPlayer(); 
+    // Update the UI
+    document.getElementById(`score-${activePlayer}`).textContent = scores[activePlayer];
+
+    // Check if player won the game
+    if(scores[activePlayer] >= 20) {
+      document.getElementById(`name-${activePlayer}`).textContent = 'Winner!';
+      diceDom.style.display = 'none';
+      document.querySelector(`.player-${activePlayer}-panel`).classList.add('winner');
+      document.querySelector(`.player-${activePlayer}-panel`).classList.remove('active');
+      isPlaying = false;
+      
+    } else {
+      // If no winner, switch player
+      switchPlayer(); 
+    }
   }
 });
 
